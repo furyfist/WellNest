@@ -1,7 +1,10 @@
+# backend/api/v1/endpoints/chat.py
+
 from fastapi import APIRouter
-from models.schemas import ChatMessageRequest, ChatMessageResponse
-# Import the service function we just created.
-from services.chat_service import get_chat_response
+# --- CORRECTED IMPORTS ---
+# Making the imports absolute from the 'backend' package.
+from backend.models.schemas import ChatMessageRequest, ChatMessageResponse
+from backend.services.chat_service import get_chat_response
 
 router = APIRouter()
 

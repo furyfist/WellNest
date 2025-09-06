@@ -1,6 +1,10 @@
+# backend/api/v1/endpoints/resources.py
+
 from fastapi import APIRouter
 from typing import List
-from models.schemas import Resource
+# --- CORRECTED IMPORT ---
+# Making the import absolute from the 'backend' package.
+from backend.models.schemas import Resource
 
 router = APIRouter()
 
@@ -33,4 +37,3 @@ def get_resource_by_id(resource_id: int) -> Resource | dict:
             break
             
     return resource_found or {"error": "Resource not found"}
-

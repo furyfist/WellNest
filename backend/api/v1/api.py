@@ -1,5 +1,9 @@
+# backend/api/v1/api.py
+
 from fastapi import APIRouter
-from api.v1.endpoints import chat, resources
+# --- CORRECTED IMPORT ---
+# This import needs to be absolute from the project root.
+from backend.api.v1.endpoints import chat, resources
 
 api_router = APIRouter()
 
