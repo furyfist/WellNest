@@ -1,21 +1,26 @@
+# backend/main.py
+
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+# --- CORRECTED IMPORTS ---
+# We use absolute imports starting from the 'backend' package name,
+# because we are running the application from the root directory.
+from backend.db.vector_store import vector_store_instance
+from backend.api.v1.api import api_router
 
-app = FastAPI()
+app = FastAPI(title="WellNest API")
 
-origins =[
-    "http://localhost:5173"
-    "http://localhost:3000"
-]
+# --- STARTUP EVENT ---
+@app.on_event("startup")
+def startup_event():
+    """
+    This function will be called when the FastAPI application starts.
+    """
+    print("Application startup: Loading vector store...")
+    vector_store_instance.load_local()
+    print("Vector store loaded successfully.")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins = origins,
-    allow_credentials=True,
-    allow_methods = ["*"],
-    allow_headers = ["*"],
-)
+app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():
-    return {"Message : backend is running!"}
+    return {"message": "Welcome to the WellNest API"}
