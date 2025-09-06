@@ -15,7 +15,9 @@ class Settings(BaseSettings):
 
     API_V1_STR: str = "/api/v1"
 
-    GEMINI_API_KEY: str
+    GEMINI_API_KEY: str 
+    GEMINI_MODEL_NAME: str = "gemini-2.5-pro"
+
 
     class Config:
         # This tells Pydantic to look for a .env file if it exists,
