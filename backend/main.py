@@ -1,21 +1,24 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+# Import the single instance of our vector store.
+from db.vector_store import vector_store_instance
+from api.v1.api import api_router
 
-app = FastAPI()
+app = FastAPI(title="WellNest API")
 
-origins =[
-    "http://localhost:5173"
-    "http://localhost:3000"
-]
+# --- NEW: STARTUP EVENT ---
+@app.on_event("startup")
+def startup_event():
+    """
+    This function will be called when the FastAPI application starts.
+    It's the perfect place to load our ML models, database connections, etc.
+    """
+    print("Application startup: Loading vector store...")
+    # Call the method to load the data from disk into the vector_store_instance.
+    vector_store_instance.load_local()
+    print("Vector store loaded successfully.")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins = origins,
-    allow_credentials=True,
-    allow_methods = ["*"],
-    allow_headers = ["*"],
-)
+app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():
-    return {"Message : backend is running!"}
+    return {"message": "Welcome to the WellNest API"}
