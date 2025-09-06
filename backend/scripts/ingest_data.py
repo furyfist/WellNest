@@ -2,90 +2,80 @@
 
 import os
 import pickle
+# We will use a PDF loader from the langchain community package
+from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-# We import our fully functional VectorStore class.
+# Use our absolute import path
 from backend.db.vector_store import VectorStore
 import faiss
 
-# --- 1. Define Constants and Data Source ---
+# --- 1. DEFINE CONSTANTS ---
 
-# Define the paths for the output files.
-DATA_DIR = "data"
+# This is the directory where we will save the final index and documents.
+DATA_DIR = "backend/data"
+# This is the directory where you will place your source PDF files.
+DOCUMENTS_DIR = "backend/documents"
+
 INDEX_PATH = os.path.join(DATA_DIR, "faiss_index.bin")
 DOCS_PATH = os.path.join(DATA_DIR, "documents.pkl")
 
-# For this example, our source material is a simple list of strings.
-# In a real-world scenario, you would load this from text files, a database, etc.
-DUMMY_ARTICLES = [
-    """
-    Understanding Anxiety: Anxiety is a normal human emotion characterized by feelings of tension, worried thoughts, and physical changes like increased blood pressure. Knowing the triggers is the first step. Common triggers include work stress, financial worries, and relationship problems. Recognizing these can help you anticipate and manage your anxiety.
-    """,
-    """
-    Techniques for Stress Management: Deep breathing exercises are a powerful tool for stress reduction. The 4-7-8 technique is simple: inhale for 4 seconds, hold for 7, and exhale for 8. This practice can calm your nervous system. Another effective method is mindfulness meditation, which involves focusing on your breath and observing your thoughts without judgment.
-    """,
-    """
-    The Importance of Sleep: Quality sleep is crucial for mental and emotional health. Lack of sleep can exacerbate anxiety and stress. To improve sleep hygiene, try to maintain a consistent sleep schedule, create a relaxing bedtime routine, and avoid screens before bed. A dark, quiet, and cool environment is ideal for sleeping.
-    """
-]
-
-# --- 2. Main Ingestion Logic ---
-
+# --- 2. MAIN INGESTION LOGIC ---
 
 def main():
-    """
-    Main function to process, chunk, embed, and save the documents.
-    """
     print("Starting data ingestion...")
 
-    # Create the data directory if it doesn't exist.
-    if not os.path.exists(DATA_DIR):
-        os.makedirs(DATA_DIR)
-        print(f"Created directory: {DATA_DIR}")
+    # Create necessary directories if they don't exist.
+    for dir_path in [DATA_DIR, DOCUMENTS_DIR]:
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+            print(f"Created directory: {dir_path}")
+
+    # --- Loading and Processing PDFs ---
+    
+    all_pages = []
+    pdf_files = [f for f in os.listdir(DOCUMENTS_DIR) if f.endswith(".pdf")]
+    
+    if not pdf_files:
+        print(f"No PDF files found in '{DOCUMENTS_DIR}'.")
+        print("Please add at least one PDF to that directory to create a knowledge base.")
+        return
+
+    print(f"Found {len(pdf_files)} PDF(s) to process.")
+
+    for pdf_file in pdf_files:
+        pdf_path = os.path.join(DOCUMENTS_DIR, pdf_file)
+        # Use PyPDFLoader to load the document.
+        loader = PyPDFLoader(pdf_path)
+        # The 'load' method returns a list of "Document" objects, one for each page.
+        pages = loader.load()
+        all_pages.extend(pages)
+        print(f"Loaded {len(pages)} pages from {pdf_file}.")
 
     # --- Chunking the Documents ---
-
-    # We use a text splitter from LangChain to break down large texts.
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,  # The maximum size of each chunk (in characters).
-        # The number of characters to overlap between chunks.
-        chunk_overlap=50,
-    )
-    # The 'split_text' method processes all our articles.
-    chunks = text_splitter.split_text("\n\n".join(DUMMY_ARTICLES))
-    print(f"Split documents into {len(chunks)} chunks.")
-
+    
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    # The splitter can directly work with the list of Document objects.
+    chunks = text_splitter.split_documents(all_pages)
+    # We need to extract the text content from each chunk object.
+    chunk_texts = [chunk.page_content for chunk in chunks]
+    print(f"Split the documents into {len(chunks)} chunks.")
+    
     # --- Creating and Populating the Vector Store ---
-
-    # Initialize our VectorStore. The model will be downloaded on first use.
+    
     vector_store = VectorStore()
-
-    # Add the text chunks to the vector store to be embedded and indexed.
-    vector_store.add_documents(chunks)
-    print("Documents have been added to the vector store.")
-
+    vector_store.add_documents(chunk_texts)
+    print("Chunks have been embedded and added to the vector store.")
+    
     # --- Saving the Index and Documents ---
 
-    # We must save two things:
-    # 1. The FAISS index itself.
-    # 2. The list of document chunks (so we can retrieve the original text).
-
-    # Save the FAISS index to a binary file.
     faiss.write_index(vector_store.index, INDEX_PATH)
     print(f"FAISS index saved to {INDEX_PATH}")
-
-    # Save the list of document chunks using pickle.
+    
     with open(DOCS_PATH, "wb") as f:
         pickle.dump(vector_store.documents, f)
-    print(f"Documents saved to {DOCS_PATH}")
-
+    print(f"Document chunks saved to {DOCS_PATH}")
+    
     print("\nIngestion complete!")
-    print(f"Created '{INDEX_PATH}' and '{DOCS_PATH}'.")
-    print("You can now run the main application.")
-
-
-# --- 3. Run the script ---
 
 if __name__ == "__main__":
-    # This block ensures the main() function is called only when
-    # the script is executed directly from the command line.
     main()

@@ -1,13 +1,8 @@
-# backend/services/chat_service.py
-
 import google.generativeai as genai
 
-# --- CORRECTED IMPORTS ---
-# Making the imports absolute from the 'backend' package.
 from backend.core.config import settings
 from backend.db.vector_store import vector_store_instance
 
-# Configure the Google Generative AI client with the API key from our settings.
 try:
     genai.configure(api_key=settings.GEMINI_API_KEY)
     print("Google Gemini API configured successfully.")
@@ -17,20 +12,12 @@ except Exception as e:
 
 
 def get_chat_response(message: str) -> str:
-    """
-    Generates a chatbot response using the full RAG pipeline.
-
-    Args:
-        message: The user's input message.
-
-    Returns:
-        The chatbot's generated response.
-    """
     print(f"Searching vector store for context related to: '{message}'")
     context_chunks = vector_store_instance.search(query=message, k=3)
 
-    if not context_chunks:
-        return "I'm sorry, but my knowledge base does not contain information about that topic. Could you ask something else?"
+    # A more robust check to see if the vector store is empty.
+    if not context_chunks or "Vector store is empty" in context_chunks[0]:
+        return "I'm sorry, but my knowledge base is currently empty or does not contain information about that topic."
 
     context_str = "\n\n".join(context_chunks)
     print(f"Retrieved context:\n---\n{context_str}\n---")
@@ -52,8 +39,10 @@ def get_chat_response(message: str) -> str:
     """
 
     try:
-        print("Generating response from Gemini model...")
-        model = genai.GenerativeModel('gemini-pro')
+        print(f"Generating response from Gemini model: {settings.GEMINI_MODEL_NAME}...")
+        # --- CORRECTED MODEL NAME ---
+        # We now use the model name from our settings file.
+        model = genai.GenerativeModel(settings.GEMINI_MODEL_NAME)
         response = model.generate_content(prompt)
 
         final_response = response.text
