@@ -1,169 +1,163 @@
-# Student Mental Health Support Platform
+# WellNest
 
-A comprehensive digital intervention system designed to address the growing mental health crisis in higher education institutions, particularly focusing on accessibility, cultural sensitivity, and stigma-free support delivery.
+**AI-Powered Mental Health Support for Students**
 
-## Problem Statement
+WellNest connects students who need help with those who can provide it, creating a safe space for mental health support without judgment.
 
-Mental health issues among college students have reached critical levels, with significant increases in anxiety, depression, burnout, sleep disorders, academic stress, and social isolation. Despite this growing need, there exists a substantial gap in accessible, culturally appropriate, and stigma-free mental health support systems within higher education institutions.
+## The Problem
 
-### Core Issues We Address
+Every day, 18 students in India take their own lives. That's 13,000 young minds lost every year according to the 2022 National Crime Records Bureau. Traditional support systems fail students due to stigma, long wait times, and limited availability. Generic AI chatbots make things worse by giving unvetted, potentially harmful advice pulled from random internet sources.
 
-- **Lack of Accessible Support**: Traditional counseling services are often overwhelmed, understaffed, or intimidating for students to approach
-- **Cultural and Language Barriers**: Most available solutions are Western-oriented and don't account for regional cultural contexts
-- **Stigma and Privacy Concerns**: Students avoid seeking help due to fear of judgment or lack of confidentiality
-- **Early Detection Gap**: No systematic approach to identify students at risk before reaching crisis points
-- **Institutional Blindness**: Educational institutions lack data-driven insights to understand and address mental health trends
+Students need immediate, safe, and reliable first-line support. That's what WellNest provides.
 
-## Solution Overview
+## What WellNest Does
 
-Our platform provides a multi-faceted approach to student mental health support through:
+WellNest is built around two simple paths: **get help** or **help others**.
 
-### 🤖 AI-Guided First Response System
-- Intelligent chat interface offering immediate coping strategies
-- Crisis detection and appropriate escalation protocols
-- Culturally sensitive responses tailored to regional contexts
-- Safe space for students to express concerns without judgment
+**For students needing support:**
+- Anonymous peer-to-peer matching with students who understand your struggles
+- Join support groups without the toxicity of social media
+- Book appointments with licensed counselors
+- Chat with WellChat, our safety-first AI assistant
 
-### 🔒 Confidential Professional Connection
-- Anonymous booking system for campus counselors
-- Integration with regional mental health helplines
-- Seamless referral system to professional support networks
-- Privacy-first approach to all interactions
+**For students wanting to help:**
+- Become a peer supporter (after manual review)
+- Join one-on-one support sessions
+- Participate in group discussions
 
-### 📚 Comprehensive Resource Hub
-- Psychoeducational content in multiple regional languages
-- Audio-guided relaxation and mindfulness exercises
-- Evidence-based mental wellness guides
-- Crisis intervention resources and emergency contacts
+**For institutions:**
+- Admin dashboard to track campus mental health trends
+- Early warning systems for at-risk students
+- Tools to provide proactive support at scale
 
-### 👥 Peer Support Network
-- Moderated peer-to-peer support forums
-- Anonymous matching with trained student volunteers
-- Safe spaces for sharing experiences and coping strategies
-- Community-driven support system
+## The Tech Behind WellNest
 
-### 📊 Institutional Analytics Dashboard
-- Anonymous data analytics for administrators
-- Trend identification and early warning systems
-- Resource utilization tracking
-- Evidence-based policy framework development
+### WellChat: Not Your Average Chatbot
 
-## Why This Matters
+WellChat runs on a custom RAG (Retrieval-Augmented Generation) pipeline. Here's what makes it different:
 
-### Addressing Real Gaps in Current Solutions
+**Custom Dataset:** I manually curated data from 109 websites, organized it into 4 problem areas, and structured everything in Q&A format. This makes vector searches faster and more accurate.
 
-Most existing mental health applications are:
-- **Generic**: One-size-fits-all approaches that ignore cultural nuances
-- **Disconnected**: No integration with local support infrastructure
-- **Commercial**: Expensive solutions that exclude many students
-- **Culturally Insensitive**: Designed for Western contexts without regional adaptation
+**No Hallucinations:** If WellChat doesn't have data for your question, it won't make something up. No random internet advice, no potentially dangerous suggestions.
 
-### Our Differentiators
+**Circuit Breaker System:** When someone shows signs of being at high risk, WellChat immediately connects them with campus authorities or support teams. Fully automated, fully anonymous.
 
-- **Cultural Integration**: Built with regional languages and cultural contexts in mind
-- **Institution-Specific Customization**: Tailored to work with existing campus resources
-- **Offline Support Mapping**: Connects digital platform with real-world counseling services
-- **Real-Time Analytics**: Provides actionable insights for institutional intervention
-- **Open Source**: Accessible to all institutions regardless of budget constraints
+**Mobile-First:** Works on any phone because that's how students actually access help.
 
-## Technical Architecture
+### Technical Architecture
 
-### Frontend
-- React with TypeScript for type-safe development
-- Responsive, mobile-first design
-- Accessibility-compliant interface (WCAG guidelines)
-- Multi-language support architecture
+```cpp
+// Simplified data flow
+User Query -> Vector Search -> Retrieve Curated Data -> Generate Safe Response
+```
 
-### Core Features
-- **Assessment System**: Standardized psychological screening tools (PHQ-9, GAD-7, GHQ)
-- **Matching Algorithm**: AI-driven pairing for peer support
-- **Crisis Detection**: Pattern recognition for emergency intervention
-- **Analytics Engine**: Anonymous data processing and trend analysis
+**Backend:**
+- FastAPI for the REST API
+- FAISS for vector similarity search
+- Google Gemini for text generation
+- Custom ingestion pipeline for PDF processing
 
-### Security & Privacy
-- End-to-end encryption for all communications
-- Anonymous user identification system
-- GDPR-compliant data handling
-- Regular security audits and updates
+**Frontend:**
+- React with TypeScript
+- Tailwind CSS for styling
+- Real-time chat interface
 
-## Target Impact
-
-### For Students
-- Reduced barriers to seeking mental health support
-- Culturally appropriate and linguistically accessible resources
-- Immediate access to coping strategies and peer support
-- Safe, judgment-free environment for expressing concerns
-
-### For Institutions
-- Data-driven insights into student mental health trends
-- Early identification of at-risk populations
-- Improved resource allocation and intervention strategies
-- Enhanced support for existing counseling services
-
-### For Communities
-- Reduced stigma around mental health discussions
-- Trained peer support networks
-- Culturally sensitive approach to mental wellness
-- Scalable model for widespread implementation
+**Data Processing:**
+- 4 PDFs (24 pages) processed into 94 text chunks
+- all-MiniLM-L6-v2 for embeddings
+- Q&A format for optimal retrieval
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn package manager
-- Modern web browser with JavaScript enabled
+- Python 3.9+
+- Node.js and npm
+- Google Gemini API key
 
-### Installation
+### Backend Setup
+
+1. **Create virtual environment:**
 ```bash
-# Clone the repository
-git clone [repository-url]
-
-# Install dependencies
-npm install
-
-# Start development server
-npm start
-
-# Build for production
-npm run build
+python -m venv backend/venv
+# Windows
+backend/venv/Scripts/activate
+# macOS/Linux
+source backend/venv/bin/activate
 ```
 
-### Configuration
-1. Set up environment variables for API endpoints
-2. Configure regional language packs
-3. Integrate with institutional counseling systems
-4. Set up analytics and monitoring
+2. **Install dependencies:**
+```bash
+pip install -r backend/requirements.txt
+```
 
-## Contributing
+3. **Add your API key:**
+Create `backend/.env`:
+```
+GEMINI_API_KEY="your_api_key_here"
+```
 
-We welcome contributions from developers, mental health professionals, and educators. Please see our contributing guidelines for:
-- Code style and standards
-- Testing requirements
-- Documentation expectations
-- Review process
+4. **Build the knowledge base:**
+```bash
+python -m backend.scripts.ingest_data
+```
 
-## Support and Resources
+5. **Start the server:**
+```bash
+python -m uvicorn backend.main:app --reload
+```
 
-### For Developers
-- API documentation
-- Component library
-- Testing guidelines
-- Deployment instructions
+Backend runs at `http://127.0.0.1:8000`
 
-### For Institutions
-- Implementation guide
-- Training materials
-- Integration support
-- Analytics interpretation
+### Frontend Setup
 
-## License
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-This project is open source and available under the MIT License to ensure accessibility for all educational institutions.
+Frontend runs at `http://localhost:5173`
 
-## Contact
+## How It Works
 
-For questions, support, or collaboration opportunities, please reach out through our official channels or submit issues through the repository.
+1. **Data Ingestion:** Custom PDFs are processed and converted to vectors
+2. **Query Processing:** User questions are matched against the knowledge base
+3. **Safe Generation:** Only curated information is used to generate responses
+4. **Crisis Detection:** High-risk queries trigger immediate intervention protocols
+
+## Revenue Model
+
+**What stays free:** All peer support features remain completely free.
+
+**What generates revenue:**
+- Service fees from professional counselor bookings
+- Institutional licenses for colleges (admin dashboards, analytics, early warning systems)
+
+The more we earn, the more students we can help for free.
+
+## Challenges Solved
+
+**Data Quality:** Public mental health data was unreliable and potentially harmful. Solution: built a custom dataset from scratch using vetted sources.
+
+**AI Safety:** Standard chatbots can give dangerous advice. Solution: RAG architecture ensures responses come only from approved content.
+
+**Accessibility:** Help needs to be available 24/7 on any device. Solution: mobile-first design that works on any phone.
+
+**Scale:** Traditional counseling doesn't scale. Solution: peer support network + institutional tools for early intervention.
+
+## Future Plans
+
+- User accounts with anonymous chat history
+- Expanded knowledge base with more vetted resources
+- Direct integration with campus counseling services
+- Fine-tuned open-source model to reduce API dependency
+
+## Why This Matters
+
+Sometimes saving a life doesn't need a superhero. It just needs someone who cares, and technology that connects them safely.
+
+10 years ago, Rancho said "there is no machine to measure mental pressure." Today, WellNest is the first step in that direction.
 
 ---
 
-*Building a supportive, accessible, and culturally sensitive approach to student mental health - because every student deserves access to the support they need.*
+*Built with the belief that mental health support shouldn't have barriers, stigma, or price tags when you need it most.*
