@@ -47,7 +47,7 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <Heart className="h-8 w-8 text-primary" />
-              <span className="text-xl font-semibold text-foreground">MindBridge</span>
+              <span className="text-xl font-semibold text-foreground">WellNest</span>
             </div>
             <div className="flex items-center space-x-4">
               <Link to="/resources">
@@ -145,7 +145,7 @@ const Index = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/20">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-foreground mb-12">
-            How MindBridge Works
+            How WellNest Works
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8">
